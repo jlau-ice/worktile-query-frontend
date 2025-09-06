@@ -48,7 +48,7 @@ function HomePage() {
     try {
       console.log('Fetching workload for user:', userId, 'page:', page, 'size:', size)
       const response = await getWorkloadByUid({
-        createdBy: userId,
+        uid: userId,
         pageSize: size,
         pageNumber: page + 1, // 后端从1开始，前端从0开始
       })

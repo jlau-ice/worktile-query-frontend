@@ -21,7 +21,7 @@ export async function getWorkloadByUid(
     params: API.WorkloadDTO,
     options?: { [key: string]: any }
 ) {
-  return request<API.PaginatedWorkload>('/workload/', {
+  return request<API.PaginatedWorkload>('/workload', {
     method: 'GET',
     params: {
       ...params,
