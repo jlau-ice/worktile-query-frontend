@@ -28,6 +28,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
     try {
       const requestParams = {
         createdBy: selectedUser.uid,
+        uid: selectedUser.uid,
         pageSize: size,
         pageNumber: page,
       }
