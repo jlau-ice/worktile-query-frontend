@@ -82,7 +82,19 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       title: '序号',
       key: 'index',
       width: 80,
-      render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
+      render: (_, __, index) => {
+        const page = Number(currentPage) || 1
+        const size = Number(pageSize) || 10
+        const rowNumber = (page - 1) * size + index + 1
+        console.log('Row number calculation:', { 
+          currentPage: page, 
+          pageSize: size, 
+          index, 
+          rowNumber,
+          calculation: `(${page} - 1) * ${size} + ${index} + 1 = ${rowNumber}`
+        })
+        return isNaN(rowNumber) ? index + 1 : rowNumber
+      },
     },
     {
       title: '工时内容',
@@ -119,6 +131,8 @@ const WorkloadTableAntd = ({ selectedUser }) => {
   if (!selectedUser) {
     return null
   }
+
+  console.log('WorkloadTableAntd render:', { currentPage, pageSize, total, workloadLength: workload.length })
 
   return (
     <Card style={{ marginTop: 16 }}>
@@ -163,7 +177,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
           showQuickJumper: true,
           showTotal: (total, range) => 
             `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-          pageSizeOptions: ['5', '10', '20', '50'],
+          pageSizeOptions: [5, 10, 20, 50],
           onChange: handleTableChange,
           onShowSizeChange: handleTableChange,
         }}
