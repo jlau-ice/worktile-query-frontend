@@ -13,7 +13,6 @@ function App() {
   const [selectedUser, setSelectedUser] = useState(null)
   const [workload, setWorkload] = useState([])
   const [tabIndex, setTabIndex] = useState(0)
-
   const handleSearch = async () => {
     setLoading(true)
     setError(null)
@@ -39,7 +38,6 @@ function App() {
   // 当 selectedUser 变化时，获取其工时数据
   useEffect(() => {
     if (!selectedUser) return
-
     const fetchWorkload = async () => {
       setLoading(true)
       setError(null)
@@ -53,7 +51,6 @@ function App() {
         setLoading(false)
       }
     }
-
     fetchWorkload()
   }, [selectedUser])
 
@@ -71,7 +68,6 @@ function App() {
         </Box>
       )}
       {error && <Alert severity="error">{error}</Alert>}
-
       {users.length > 0 && (
         <UserTabs
           users={users}
@@ -82,7 +78,6 @@ function App() {
           }}
         />
       )}
-
       <WorkloadTable selectedUser={selectedUser} workload={workload} />
     </Container>
   )
