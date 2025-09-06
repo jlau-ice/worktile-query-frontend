@@ -42,6 +42,7 @@ declare namespace API {
   // 请求DTO类型
   export interface WorkloadDTO {
     createdBy: string
+    uid?: string
     pageSize?: number
     pageNumber?: number
   }

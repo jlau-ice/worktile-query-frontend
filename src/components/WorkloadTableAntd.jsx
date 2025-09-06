@@ -26,13 +26,22 @@ const WorkloadTableAntd = ({ selectedUser }) => {
     
     setLoading(true)
     try {
-      console.log('Fetching workload for user:', selectedUser.uid, 'page:', page, 'size:', size)
-      const response = await getWorkloadByUid({
-        uid: selectedUser.uid,
+      const requestParams = {
+        createdBy: selectedUser.uid,
         pageSize: size,
         pageNumber: page,
-      })
-      console.log('Workload response:', response)
+      }
+      console.log('=== API Request ===')
+      console.log('User:', selectedUser.uid)
+      console.log('Request params:', requestParams)
+      console.log('Page type:', typeof page, 'Size type:', typeof size)
+      
+      const response = await getWorkloadByUid(requestParams)
+      console.log('API Response:', response)
+      console.log('Response data:', response.data)
+      console.log('Total count:', response.data?.total)
+      console.log('Data array:', response.data?.data)
+      
       setWorkload(response.data?.data || [])
       setTotal(response.data?.total || 0)
     } catch (err) {
@@ -57,6 +66,12 @@ const WorkloadTableAntd = ({ selectedUser }) => {
   // 分页处理
   const handleTableChange = (pagination) => {
     console.log('Table change:', pagination)
+    console.log('Current pagination state:', { currentPage, pageSize })
+    console.log('New pagination values:', { 
+      newCurrent: pagination.current, 
+      newPageSize: pagination.pageSize 
+    })
+    
     setCurrentPage(pagination.current)
     setPageSize(pagination.pageSize)
     fetchWorkload(pagination.current, pagination.pageSize)
