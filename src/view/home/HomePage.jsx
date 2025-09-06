@@ -15,6 +15,7 @@ function HomePage() {
   const [tabIndex, setTabIndex] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
   const [pageSize, setPageSize] = useState(10)
+  const [currentPage, setCurrentPage] = useState(0)
 
   const handleSearch = async () => {
     setLoading(true)
@@ -66,18 +67,23 @@ function HomePage() {
   // 当 selectedUser 变化时，获取其工时数据
   useEffect(() => {
     if (!selectedUser) return
+    setCurrentPage(0) // 重置到第一页
     fetchWorkload(selectedUser.uid, 0, pageSize)
   }, [selectedUser, fetchWorkload, pageSize])
 
   // 分页处理函数
   const handlePageChange = (newPage) => {
+    console.log('Page change to:', newPage)
+    setCurrentPage(newPage)
     if (selectedUser) {
       fetchWorkload(selectedUser.uid, newPage, pageSize)
     }
   }
 
   const handlePageSizeChange = (newPageSize) => {
+    console.log('Page size change to:', newPageSize)
     setPageSize(newPageSize)
+    setCurrentPage(0) // 重置到第一页
     if (selectedUser) {
       fetchWorkload(selectedUser.uid, 0, newPageSize)
     }
@@ -111,6 +117,8 @@ function HomePage() {
         selectedUser={selectedUser} 
         workload={workload}
         totalCount={totalCount}
+        currentPage={currentPage}
+        pageSize={pageSize}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
       />
