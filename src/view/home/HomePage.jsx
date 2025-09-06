@@ -23,7 +23,9 @@ function HomePage() {
     setSelectedUser(null)
     setWorkload([])
     try {
+      console.log('Searching for user:', searchName)
       const response = await getUsersByName({ name: searchName })
+      console.log('Search response:', response)
       setUsers(response.data || [])
       if (response.data && response.data.length > 0) {
         // 自动选择第一个用户
@@ -31,8 +33,8 @@ function HomePage() {
         setTabIndex(0)
       }
     } catch (err) {
-      setError('查询用户失败，请检查后端服务')
-      console.error(err)
+      console.error('Search error:', err)
+      setError(`查询用户失败: ${err.message || '请检查后端服务'}`)
     } finally {
       setLoading(false)
     }
@@ -44,16 +46,18 @@ function HomePage() {
     setLoading(true)
     setError(null)
     try {
+      console.log('Fetching workload for user:', userId, 'page:', page, 'size:', size)
       const response = await getWorkloadByUid({
         createdBy: userId,
         pageSize: size,
         pageNumber: page + 1, // 后端从1开始，前端从0开始
       })
+      console.log('Workload response:', response)
       setWorkload(response.data?.data || [])
       setTotalCount(response.data?.total || 0)
     } catch (err) {
-      setError('查询工时失败，请检查后端服务')
-      console.error(err)
+      console.error('Workload fetch error:', err)
+      setError(`查询工时失败: ${err.message || '请检查后端服务'}`)
     } finally {
       setLoading(false)
     }

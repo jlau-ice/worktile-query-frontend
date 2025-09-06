@@ -6,7 +6,7 @@ export async function getUsersByName(
   params: API.RequestUsersParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.User>('/api/users', {
+  return request<API.User>('/users', {
     method: 'GET',
     params: {
       ...params,
@@ -21,7 +21,7 @@ export async function getWorkloadByUid(
     params: API.WorkloadDTO,
     options?: { [key: string]: any }
 ) {
-  return request<API.PaginatedWorkload>('/api/workload/', {
+  return request<API.PaginatedWorkload>('/workload/', {
     method: 'GET',
     params: {
       ...params,

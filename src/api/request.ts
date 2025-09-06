@@ -3,7 +3,7 @@ import { ApiResponse } from '../types/result'
 
 // 创建 axios 实例
 const request: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://127.0.0.1:1323/api',
   timeout: 10000,
 })
 
@@ -23,14 +23,19 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   function (response) {
     const { data } = response
-    if (data.code !== 200) {
-      return Promise.reject(new Error(data.msg || 'Error'))
+    console.log('API Response:', response) // 添加日志以便调试
+    
+    // 检查是否有code字段，如果有且不为200则抛出错误
+    if (data && typeof data === 'object' && 'code' in data && data.code !== 200) {
+      return Promise.reject(new Error(data.msg || 'API请求失败'))
     }
+    
+    // 如果没有code字段，直接返回data
     return data
   },
   function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
-    // 对响应错误做点什么
+    console.error('API Error:', error) // 添加错误日志
     return Promise.reject(error)
   }
 )
