@@ -73,9 +73,39 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       newPageSize: pagination.pageSize 
     })
     
-    setCurrentPage(pagination.current)
-    setPageSize(pagination.pageSize)
-    fetchWorkload(pagination.current, pagination.pageSize)
+    const newPage = pagination.current
+    const newPageSize = pagination.pageSize
+    
+    setCurrentPage(newPage)
+    setPageSize(newPageSize)
+    
+    // 直接调用API，不依赖状态更新
+    if (!selectedUser) return
+    
+    setLoading(true)
+    const requestParams = {
+      createdBy: selectedUser.uid,
+      uid: selectedUser.uid,
+      pageSize: newPageSize,
+      pageNumber: newPage,
+    }
+    
+    console.log('=== API Request (Table Change) ===')
+    console.log('Request params:', requestParams)
+    
+    getWorkloadByUid(requestParams)
+      .then(response => {
+        console.log('API Response (Table Change):', response)
+        setWorkload(response.data?.data || [])
+        setTotal(response.data?.total || 0)
+      })
+      .catch(err => {
+        console.error('Workload fetch error:', err)
+        message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   // 页面跳转处理
@@ -85,8 +115,35 @@ const WorkloadTableAntd = ({ selectedUser }) => {
     
     if (targetPage >= 1 && targetPage <= maxPage) {
       setCurrentPage(targetPage)
-      fetchWorkload(targetPage, pageSize)
       setPageInput('')
+      
+      // 直接调用API，不依赖状态更新
+      if (!selectedUser) return
+      
+      setLoading(true)
+      const requestParams = {
+        createdBy: selectedUser.uid,
+        uid: selectedUser.uid,
+        pageSize: pageSize,
+        pageNumber: targetPage,
+      }
+      
+      console.log('=== API Request (Page Jump) ===')
+      console.log('Request params:', requestParams)
+      
+      getWorkloadByUid(requestParams)
+        .then(response => {
+          console.log('API Response (Page Jump):', response)
+          setWorkload(response.data?.data || [])
+          setTotal(response.data?.total || 0)
+        })
+        .catch(err => {
+          console.error('Workload fetch error:', err)
+          message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
     } else {
       message.warning(`请输入1到${maxPage}之间的页码`)
     }
