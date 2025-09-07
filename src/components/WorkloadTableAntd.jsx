@@ -18,136 +18,56 @@ const WorkloadTableAntd = ({ selectedUser }) => {
   const [total, setTotal] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const [pageInput, setPageInput] = useState('')
-
   // 获取工时数据的函数
-  const fetchWorkload = useCallback(async (page = 1, size = pageSize) => {
-    if (!selectedUser) return
-    
-    setLoading(true)
-    try {
-      const requestParams = {
-        createdBy: selectedUser.uid,
-        uid: selectedUser.uid,
-        pageSize: size,
-        pageNumber: page,
+  const fetchWorkload = useCallback(
+    async (page, size) => {
+      if (!selectedUser) {
+        return
       }
-      console.log('=== API Request ===')
-      console.log('User:', selectedUser.uid)
-      console.log('Request params:', requestParams)
-      console.log('Page type:', typeof page, 'Size type:', typeof size)
-      
-      const response = await getWorkloadByUid(requestParams)
-      console.log('API Response:', response)
-      console.log('Response data:', response.data)
-      console.log('Total count:', response.data?.total)
-      console.log('Data array:', response.data?.data)
-      
-      setWorkload(response.data?.data || [])
-      setTotal(response.data?.total || 0)
-    } catch (err) {
-      console.error('Workload fetch error:', err)
-      message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
-    } finally {
-      setLoading(false)
-    }
-  }, [selectedUser, pageSize])
-
-  // 当 selectedUser 变化时，获取其工时数据
+      setLoading(true)
+      try {
+        const requestParams = {
+          uid: selectedUser.uid,
+          pageSize: size,
+          pageNumber: page,
+        }
+        const response = await getWorkloadByUid(requestParams)
+        setWorkload(response.data?.data || [])
+        setTotal(response.data?.total || 0)
+      } catch (err) {
+        console.error('Workload fetch error:', err)
+        message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [selectedUser] // 关键：fetchWorkload只依赖于selectedUser
+  )
+  // 当 selectedUser 变化时，重置分页并获取数据
   useEffect(() => {
     if (!selectedUser) {
       setWorkload([])
       setTotal(0)
       return
     }
-    setCurrentPage(1) // 重置到第一页
-    fetchWorkload(1, pageSize)
-  }, [selectedUser, fetchWorkload, pageSize])
-
+    // 重置到第一页和默认每页条数，并立即发起请求
+    const initialPageSize = 10
+    setCurrentPage(1)
+    setPageSize(initialPageSize)
+    fetchWorkload(1, initialPageSize)
+  }, [selectedUser, fetchWorkload])
   // 分页处理
-  const handleTableChange = (pagination) => {
-    console.log('Table change:', pagination)
-    console.log('Current pagination state:', { currentPage, pageSize })
-    console.log('New pagination values:', { 
-      newCurrent: pagination.current, 
-      newPageSize: pagination.pageSize 
-    })
-    
-    const newPage = pagination.current
-    const newPageSize = pagination.pageSize
-    
-    setCurrentPage(newPage)
-    setPageSize(newPageSize)
-    
-    // 直接调用API，不依赖状态更新
-    if (!selectedUser) return
-    
-    setLoading(true)
-    const requestParams = {
-      createdBy: selectedUser.uid,
-      uid: selectedUser.uid,
-      pageSize: newPageSize,
-      pageNumber: newPage,
-    }
-    
-    console.log('=== API Request (Table Change) ===')
-    console.log('Request params:', requestParams)
-    
-    getWorkloadByUid(requestParams)
-      .then(response => {
-        console.log('API Response (Table Change):', response)
-        setWorkload(response.data?.data || [])
-        setTotal(response.data?.total || 0)
-      })
-      .catch(err => {
-        console.error('Workload fetch error:', err)
-        message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }
-
-  // 页面跳转处理
-  const handlePageJump = () => {
-    const targetPage = parseInt(pageInput, 10)
-    const maxPage = Math.ceil(total / pageSize)
-    
-    if (targetPage >= 1 && targetPage <= maxPage) {
-      setCurrentPage(targetPage)
-      setPageInput('')
-      
-      // 直接调用API，不依赖状态更新
-      if (!selectedUser) return
-      
-      setLoading(true)
-      const requestParams = {
-        createdBy: selectedUser.uid,
-        uid: selectedUser.uid,
-        pageSize: pageSize,
-        pageNumber: targetPage,
+  const handleTableChange = useCallback(
+    (page, size) => {
+      if (page === currentPage && size === pageSize) {
+        return
       }
-      
-      console.log('=== API Request (Page Jump) ===')
-      console.log('Request params:', requestParams)
-      
-      getWorkloadByUid(requestParams)
-        .then(response => {
-          console.log('API Response (Page Jump):', response)
-          setWorkload(response.data?.data || [])
-          setTotal(response.data?.total || 0)
-        })
-        .catch(err => {
-          console.error('Workload fetch error:', err)
-          message.error(`查询工时失败: ${err.message || '请检查后端服务'}`)
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      message.warning(`请输入1到${maxPage}之间的页码`)
-    }
-  }
+      setCurrentPage(page)
+      setPageSize(size)
+      fetchWorkload(page, size)
+    },
+    [fetchWorkload, currentPage, pageSize]
+  )
 
   // 表格列定义
   const columns = [
@@ -156,17 +76,8 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       key: 'index',
       width: 80,
       render: (_, __, index) => {
-        const page = Number(currentPage) || 1
-        const size = Number(pageSize) || 10
-        const rowNumber = (page - 1) * size + index + 1
-        console.log('Row number calculation:', { 
-          currentPage: page, 
-          pageSize: size, 
-          index, 
-          rowNumber,
-          calculation: `(${page} - 1) * ${size} + ${index} + 1 = ${rowNumber}`
-        })
-        return isNaN(rowNumber) ? index + 1 : rowNumber
+        const rowNumber = (currentPage - 1) * pageSize + index + 1
+        return rowNumber
       },
     },
     {
@@ -205,38 +116,8 @@ const WorkloadTableAntd = ({ selectedUser }) => {
     return null
   }
 
-  console.log('WorkloadTableAntd render:', { currentPage, pageSize, total, workloadLength: workload.length })
-
   return (
     <Card style={{ marginTop: 16 }}>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: 16 
-      }}>
-        <Title level={4} style={{ margin: 0 }}>
-          {selectedUser.display_name} 的工时记录
-        </Title>
-        <Space>
-          <span style={{ color: '#666' }}>
-            共 {total} 条记录
-          </span>
-          <Space.Compact>
-            <Input
-              placeholder="跳转到页码"
-              value={pageInput}
-              onChange={(e) => setPageInput(e.target.value)}
-              onPressEnter={handlePageJump}
-              style={{ width: 120 }}
-            />
-            <Button onClick={handlePageJump}>
-              跳转
-            </Button>
-          </Space.Compact>
-        </Space>
-      </div>
-
       <Table
         columns={columns}
         dataSource={workload}
@@ -248,11 +129,9 @@ const WorkloadTableAntd = ({ selectedUser }) => {
           total: total,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total, range) => 
-            `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
           pageSizeOptions: [5, 10, 20, 50],
           onChange: handleTableChange,
-          onShowSizeChange: handleTableChange,
         }}
         scroll={{ x: 800 }}
         size="middle"
