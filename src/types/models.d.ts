@@ -29,6 +29,7 @@ declare namespace API {
     duration?: number
     createdAt?: number
     updatedAt?: number
+    reportedAt?: number
   }
 
   // 分页数据类型

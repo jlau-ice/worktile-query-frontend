@@ -74,6 +74,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
     {
       title: '序号',
       key: 'index',
+      align: 'center',
       width: 80,
       render: (_, __, index) => {
         const rowNumber = (currentPage - 1) * pageSize + index + 1
@@ -84,6 +85,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       title: '工时内容',
       dataIndex: 'description',
       key: 'description',
+      align: 'center',
       render: (text) => text || '无描述',
     },
     {
@@ -91,15 +93,23 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       dataIndex: 'duration',
       key: 'duration',
       width: 120,
-      align: 'right',
+      align: 'center',
       render: (text) => text || 0,
+    },
+    {
+      title: '工作日期',
+      dataIndex: 'reported_at',
+      key: 'reported_at',
+      width: 180,
+      align: 'center',
+      render: (text) => formatTimestamp(text),
     },
     {
       title: '创建时间',
       dataIndex: 'created_at',
       key: 'created_at',
       width: 180,
-      align: 'right',
+      align: 'center',
       render: (text) => formatTimestamp(text),
     },
     {
@@ -107,7 +117,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
       dataIndex: 'updated_at',
       key: 'updated_at',
       width: 180,
-      align: 'right',
+      align: 'center',
       render: (text) => formatTimestamp(text),
     },
   ]
@@ -123,6 +133,7 @@ const WorkloadTableAntd = ({ selectedUser }) => {
         dataSource={workload}
         rowKey={(record, index) => record.id || index}
         loading={loading}
+        bordered
         pagination={{
           current: currentPage,
           pageSize: pageSize,
