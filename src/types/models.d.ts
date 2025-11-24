@@ -1,50 +1,62 @@
 // 声明 MongoDB ObjectId 类型，如果后端返回的是字符串，可以使用 string
 declare namespace API {
-  export type ObjectId = {
-    _id: string
-  }
+    export type ObjectId = {
+        _id: string
+    }
 
-  export interface ApiResponse<T> {
-    code: number
-    data?: T
-    msg?: string
-  }
+    export interface ApiResponse<T> {
+        code: number
+        data?: T
+        msg?: string
+    }
 
-  // 获取人员列表请求参数类型
-  export interface RequestUsersParams {
-    name: string
-  }
+    // 获取人员列表请求参数类型
+    export interface RequestUsersParams {
+        name: string
+    }
 
-  // User 类型
-  export interface User {
-    id?: ObjectId
-    displayName: string
-    uid: string
-  }
+    // User 类型
+    export interface User {
+        id?: ObjectId
+        displayName: string
+        uid: string
+    }
 
-  // WorkloadEntry 类型
-  export interface WorkloadEntry {
-    id?: ObjectId
-    description?: string
-    duration?: number
-    createdAt?: number
-    updatedAt?: number
-    reportedAt?: number
-  }
+    // WorkloadEntry 类型
+    export interface WorkloadEntry {
+        id?: ObjectId
+        description?: string
+        duration?: number
+        createdAt?: number
+        updatedAt?: number
+        reportedAt?: number
+        project_info?: Project
+        task_info?: ProjectEntry
+    }
 
-  // 分页数据类型
-  export interface PaginatedWorkload {
-    data: WorkloadEntry[]
-    total: number
-    pageSize: number
-    pageNumber: number
-  }
+    export interface Project {
+        id?: string
+        name?: string
+    }
 
-  // 请求DTO类型
-  export interface WorkloadDTO {
-    createdBy: string
-    uid?: string
-    pageSize?: number
-    pageNumber?: number
-  }
+    export interface ProjectEntry {
+        id?: string
+        title?: string
+    }
+
+    // 分页数据类型
+    export interface PaginatedWorkload {
+        data: WorkloadEntry[]
+        total: number
+        pageSize: number
+        pageNumber: number
+    }
+
+    // 请求DTO类型
+    export interface WorkloadDTO {
+        createdBy: string
+        uid?: string
+        pageSize?: number
+        pageNumber?: number
+    }
 }
