@@ -4,7 +4,7 @@ import UserSearch from '../../components/UserSearch'
 import UserTabs from '../../components/UserTabs'
 import WorkloadTableAntd from '../../components/WorkloadTableAntd'
 import { getUsersByName } from '../../api/work'
-
+import "./home-page.css"
 function HomePage() {
   const [searchName, setSearchName] = useState('')
   const [users, setUsers] = useState([])
@@ -37,7 +37,7 @@ function HomePage() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 4 }} className={"container"}>
       <Typography variant="h4" component="h1" gutterBottom>
         工时查询工具
       </Typography>
