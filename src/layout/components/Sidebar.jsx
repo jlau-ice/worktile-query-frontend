@@ -2,7 +2,7 @@ import React from 'react'
 import { Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Toolbar, Box, useTheme, useMediaQuery } from '@mui/material'
 import { Home as HomeIcon, QueryStats as QueryStatsIcon, Settings as SettingsIcon, People as PeopleIcon } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
-
+import './sidebar.css'
 const drawerWidth = 240
 
 const menuItems = [
@@ -29,7 +29,7 @@ function Sidebar({ open, onClose }) {
     <Box>
       <Toolbar />
       <Box sx={{ overflow: 'auto' }}>
-        <List>
+        <List className={"menu"}>
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton
